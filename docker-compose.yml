@@ -1,0 +1,36 @@
+version: '3.8'
+
+services:
+  amnezia-web-ui:
+    image: alexishw/amneziawg-web-ui:master
+    container_name: amnezia-web-ui
+    ports:
+      - "80:80/tcp"      # Веб-интерфейс
+      - "32568:32568/udp"    # AmneziaWG порт (можно изменить)
+      - "23654:23654/udp"
+    environment:
+      - NGINX_PORT=80
+      - NGINX_USER=admin
+      - NGINX_PASSWORD=Admin852456!
+      - AUTO_START_SERVERS=true
+      - DEFAULT_MTU=1280
+      - DEFAULT_SUBNET=10.8.10.0/24
+      - DEFAULT_PORT=51820
+      - DEFAULT_DNS=8.8.8.8,1.1.1.1
+    volumes:
+      - amnezia-data:/etc/amnezia
+    cap_add:
+      - NET_ADMIN
+      - SYS_MODULE
+    devices:
+      - /dev/net/tun
+    sysctls:
+      - net.ipv4.ip_forward=1
+      - net.ipv4.conf.all.src_valid_mark=1
+      - net.ipv6.conf.all.disable_ipv6=0
+      - net.ipv6.conf.all.forwarding=1
+      - net.ipv6.conf.default.forwarding=1
+    restart: unless-stopped
+
+volumes:
+  amnezia-data:
